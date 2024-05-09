@@ -371,7 +371,15 @@ message("Running fine-mapping iteratively over loci...done")
 
 res_summary <- res %>% 
   group_by(locus) %>%
-  summarise(LeadVariant = SNP[lead == TRUE][1],
+  mutate(
+    NrVariants = length(SNP),
+    CS_95_size = length(SNP[CS_95percent == "yes"]),
+    CS_95_CI_start = min(pos[CS_95percent == "yes"]),
+    CS_95_CI_end = max(pos[CS_95percent == "yes"]),
+    CS_99_size = length(SNP[CS_99percent == "yes"]),
+    CS_99_CI_start = min(pos[CS_99percent == "yes"]),
+    CS_99_CI_end = max(pos[CS_99percent == "yes"])) %>% 
+    summarise(LeadVariant = SNP[lead == TRUE][1],
             chr = chr[lead == TRUE][1],
             pos = pos[lead == TRUE][1],
             ea = ea[lead == TRUE][1],
@@ -379,13 +387,13 @@ res_summary <- res %>%
             beta = beta[lead == TRUE][1],
             se = se[lead == TRUE][1],
             P = P[lead == TRUE][1],
-            NrVariants = length(SNP),
-            CS_95_size = length(SNP[CS_95percent == "yes"]),
-            CS_95_CI_start = min(pos[CS_95percent == "yes"]),
-            CS_95_CI_end = max(pos[CS_95percent == "yes"]),
-            CS_99_size = length(SNP[CS_99percent == "yes"]),
-            CS_99_CI_start = min(pos[CS_99percent == "yes"]),
-            CS_99_CI_end = max(pos[CS_99percent == "yes"]),
+            NrVariants = unique(NrVariants),
+            CS_95_size = unique(CS_95_size),
+            CS_95_CI_start = unique(CS_95_CI_start),
+            CS_95_CI_end = unique(CS_95_CI_end),
+            CS_99_size = unique(CS_99_size),
+            CS_99_CI_start = unique(CS_99_CI_start),
+            CS_99_CI_end = unique(CS_99_CI_end),
             LargestPipVariant = SNP[PP == max(PP)][1],
             LargestPipVariantChr = chr[PP == max(PP)][1],
             LargestPipVariantPos = pos[PP == max(PP)][1],
